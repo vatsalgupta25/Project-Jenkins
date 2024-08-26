@@ -16,12 +16,13 @@ pipeline {
             steps {
                 script {
                     def remote = [:]
-                    remote.name = 'your-server'
-                    remote.host = 'your-server-ip'
-                    remote.user = 'username'
+                    remote.name = 'Project-Jenkins'
+                    remote.host = '13.51.193.205' 
+                    remote.user = 'ubuntu'
+                    remote.identityFile = '/path/to/your/private/key.pem'  // Path to your private key file on Jenkins server
                     remote.allowAnyHosts = true
-                    sshPut remote: remote, from: 'target/yourapp.jar', into: '/path/on/remote'
-                    sshCommand remote: remote, command: 'java -jar /path/on/remote/yourapp.jar'
+                    sshPut remote: remote, from: 'app/', into: '/home/ubuntu/app/'
+                    sshCommand remote: remote, command: 'cd /home/ubuntu/app && source myflaskenv/bin/activate && nohup python3 app.py &'
                 }
             }
         }
