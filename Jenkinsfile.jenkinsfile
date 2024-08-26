@@ -14,19 +14,23 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                script {
-                    def remote = [:]
-                    remote.name = 'Project-Jenkins'
-                    remote.host = '13.51.193.205' 
-                    remote.user = 'ubuntu'
-                    remote.identityFile = '/path/to/your/private/key.pem'  // Path to your private key file on Jenkins server
-                    remote.allowAnyHosts = true
-                    sshPut remote: remote, from: 'app/', into: '/home/ubuntu/app/'
-                    sshCommand remote: remote, command: 'cd /home/ubuntu/app && source myflaskenv/bin/activate && nohup python3 app.py &'
-                }
+stage('Deploy') {
+    steps {
+        script {
+            def remote = [:]
+            remote.name = 'Project-Jenkins'
+            remote.host = '13.51.193.205' 
+            remote.user = 'ubuntu'
+            remote.allowAnyHosts = true
+
+            sshagent(['Trial.pem']) {
+                sshPut remote: remote, from: 'app/', into: '/home/ubuntu/app/'
+                sshCommand remote: remote, command: 'cd /home/ubuntu/app && source myflaskenv/bin/activate && nohup python3 app.py &'
             }
         }
     }
+}
+
 
     post {
         always {
