@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/vatsalgupta25/JenkinsTrial'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'docker build -t flask-app .'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    def remote = [:]
+                    remote.name = 'your-server'
+                    remote.host = 'your-server-ip'
+                    remote.user = 'username'
+                    remote.allowAnyHosts = true
+                    sshPut remote: remote, from: 'target/yourapp.jar', into: '/path/on/remote'
+                    sshCommand remote: remote, command: 'java -jar /path/on/remote/yourapp.jar'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
